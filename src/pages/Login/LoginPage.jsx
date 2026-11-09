@@ -43,45 +43,90 @@ export function LoginPage() {
 
   return (
     <section id="login-view" className="login">
+      {/* Animated Glowing Blobs */}
       <div className="login-bg" aria-hidden="true">
-        <span className="blob b1" />
-        <span className="blob b2" />
-        <span className="blob b3" />
+        <motion.span
+          className="blob b1"
+          animate={{
+            x: [0, 30, -20, 0],
+            y: [0, -40, 20, 0],
+            scale: [1, 1.1, 0.95, 1]
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.span
+          className="blob b2"
+          animate={{
+            x: [0, -25, 35, 0],
+            y: [0, 30, -30, 0],
+            scale: [1, 0.9, 1.1, 1]
+          }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.span
+          className="blob b3"
+          animate={{
+            x: [0, 20, -30, 0],
+            y: [0, -20, 25, 0],
+            scale: [1, 1.15, 0.9, 1]
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+        />
       </div>
 
       <motion.div
         className="login-card"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: 'easeOut' }}
+        initial={{ opacity: 0, scale: 0.94, y: 24 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* Kolom Kiri: Ilustrasi & Deskripsi */}
         <div className="login-art" aria-hidden="true">
           <div className="art-badge">
             <BrandLogo size="big" />
           </div>
-          <h2>
+          <motion.h2
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.4 }}
+          >
             Dari Kelas ke Lapangan,
             <br />
             Semua Terlaporkan.
-          </h2>
-          <p>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25, duration: 0.4 }}
+          >
             Catat penyelesaian pelatihan teori &amp; praktik alat berat, buat PDF otomatis, kirim ke
             pengawas dalam hitungan detik.
-          </p>
-          <ul className="art-points">
-            <li>
+          </motion.p>
+          <motion.ul
+            className="art-points"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.35, duration: 0.4 }}
+          >
+            <motion.li whileHover={{ x: 4 }}>
               <FileCheck2 size={18} /> PDF laporan otomatis
-            </li>
-            <li>
+            </motion.li>
+            <motion.li whileHover={{ x: 4 }}>
               <ChartColumn size={18} /> Dashboard teori vs praktik
-            </li>
-            <li>
+            </motion.li>
+            <motion.li whileHover={{ x: 4 }}>
               <ShieldCheck size={18} /> Akses aman per peran
-            </li>
-          </ul>
+            </motion.li>
+          </motion.ul>
 
-          <svg className="art-machine" viewBox="0 0 220 110" fill="none">
+          {/* Machine Illustration with subtle float */}
+          <motion.svg
+            className="art-machine"
+            viewBox="0 0 220 110"
+            fill="none"
+            animate={{ y: [0, -4, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          >
             <path
               d="M8 96h204"
               stroke="currentColor"
@@ -104,7 +149,7 @@ export function LoginPage() {
               strokeLinejoin="round"
             />
             <path d="M190 40l8 22h-20z" fill="currentColor" fillOpacity=".45" />
-          </svg>
+          </motion.svg>
         </div>
 
         {/* Kolom Kanan: Formulir Login */}
@@ -162,16 +207,23 @@ export function LoginPage() {
           </label>
 
           {errorMsg && (
-            <div className="alert alert-bad" role="alert">
+            <motion.div
+              className="alert alert-bad"
+              role="alert"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
               {errorMsg}
-            </div>
+            </motion.div>
           )}
 
-          <button
+          <motion.button
             type="submit"
             className="btn btn-primary btn-block btn-lg"
             id="login-btn"
             disabled={loading}
+            whileHover={{ scale: 1.015 }}
+            whileTap={{ scale: 0.985 }}
           >
             {loading ? (
               <>
@@ -184,7 +236,7 @@ export function LoginPage() {
                 <span>Masuk</span>
               </>
             )}
-          </button>
+          </motion.button>
 
           <p className="tiny muted center">
             Akun dibuat oleh Admin/Pengawas. Lupa kata sandi? Hubungi pengawas Anda.

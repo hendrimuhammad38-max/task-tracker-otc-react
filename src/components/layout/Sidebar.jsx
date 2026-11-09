@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
   FilePlus2,
@@ -46,7 +47,13 @@ export function Sidebar({ onLogoutClick }) {
       </div>
 
       <div className="sb-profile">
-        <div className="sb-avatar">{initials(user?.nama)}</div>
+        <motion.div
+          className="sb-avatar"
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          transition={{ type: 'spring', stiffness: 300 }}
+        >
+          {initials(user?.nama)}
+        </motion.div>
         <b>Hi, {user?.nama?.split(' ').slice(0, 2).join(' ')}!</b>
         <small>{roleLabel(user?.role)}</small>
         <span className="sb-id">{user?.badge}</span>
@@ -122,15 +129,21 @@ export function Sidebar({ onLogoutClick }) {
           <span>Laporan</span>
         </div>
         <div className="progress">
-          <span style={{ width: `${pct}%` }} />
+          <motion.span
+            initial={{ width: 0 }}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          />
         </div>
-        <button
+        <motion.button
           type="button"
           className="btn btn-mint btn-block"
           onClick={() => navigate('/laporan-baru')}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
           + Laporan Baru
-        </button>
+        </motion.button>
       </div>
     </aside>
   );

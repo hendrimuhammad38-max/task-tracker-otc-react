@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Sun, Moon, Bell, FileText, Download } from 'lucide-react';
+import { Search, Sun, Moon, Bell, FileText, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { initials, time, date, tz, num } from '../../utils/formatters';
@@ -10,7 +10,7 @@ import { API } from '../../api/apiClient';
 import { StatusPill } from '../common/StatusPill';
 import { useToast } from '../../context/ToastContext';
 
-export function Topbar() {
+export function Topbar({ onOpenMobileMenu }) {
   const { user, today } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,6 +47,17 @@ export function Topbar() {
   return (
     <>
       <header className="topbar">
+        {/* Tombol Hamburger Khusus HP */}
+        <button
+          type="button"
+          className="btn-icon mobile-menu-btn"
+          onClick={onOpenMobileMenu}
+          title="Buka Menu"
+          aria-label="Buka Menu"
+        >
+          <Menu size={20} />
+        </button>
+
         <Link to="/dashboard" className="tb-brand">
           <BrandLogo size="sm" />
           <span>
@@ -71,7 +82,7 @@ export function Topbar() {
         <div className="tb-actions">
           <button
             type="button"
-            className="btn-icon"
+            className="btn-icon theme-toggle-btn"
             onClick={toggleTheme}
             title="Ganti tema terang/gelap"
             aria-label="Ganti tema"

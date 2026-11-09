@@ -7,7 +7,6 @@ import {
   Building2,
   GraduationCap,
   ArrowRight,
-  TrendingUp,
   FileCheck2,
   Users,
   Clock,
@@ -20,6 +19,22 @@ import { useAuth } from '../../context/AuthContext';
 import { API } from '../../api/apiClient';
 import { num, time, date, tz, store, greeting } from '../../utils/formatters';
 import { StatusPill } from '../../components/common/StatusPill';
+import { AnimatedKpiCard } from '../../components/common/AnimatedKpiCard';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } }
+};
 
 export function DashboardPage() {
   const { user, masters, isAdmin } = useAuth();
@@ -107,6 +122,10 @@ export function DashboardPage() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          animation: {
+            duration: 900,
+            easing: 'easeOutQuart'
+          },
           plugins: {
             legend: { display: false }
           },
@@ -132,7 +151,6 @@ export function DashboardPage() {
       const selesai = data.summary?.statusCounts?.['Selesai'] || 0;
       const proses = data.summary?.statusCounts?.['Dalam Proses'] || 0;
       const belum = data.summary?.statusCounts?.['Belum Selesai'] || 0;
-      const total = selesai + proses + belum || 1;
 
       donutInstance.current = new Chart(donutChartRef.current, {
         type: 'doughnut',
@@ -143,7 +161,7 @@ export function DashboardPage() {
               data: [selesai, proses, belum],
               backgroundColor: ['#1d9a66', '#c98e0c', '#d34848'],
               borderWidth: 0,
-              hoverOffset: 4
+              hoverOffset: 6
             }
           ]
         },
@@ -151,6 +169,11 @@ export function DashboardPage() {
           responsive: true,
           maintainAspectRatio: false,
           cutout: '76%',
+          animation: {
+            animateRotate: true,
+            animateScale: true,
+            duration: 1000
+          },
           plugins: {
             legend: { display: false }
           }
@@ -174,24 +197,38 @@ export function DashboardPage() {
   return (
     <motion.div
       className="stack"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28 }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
       {/* Hero Header */}
-      <section className="hero" id="hero">
+      <motion.section
+        className="hero"
+        id="hero"
+        variants={itemVariants}
+        whileHover={{ scale: 1.005 }}
+        transition={{ duration: 0.2 }}
+      >
         <div className="hero-content">
-          <h1>
+          <motion.h1
+            initial={{ opacity: 0, x: -15 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
             {greeting()}, {user?.nama?.split(' ')[0]}!
-          </h1>
+          </motion.h1>
           <p>
             Ringkasan evaluasi penyelesaian pelatihan dan operasional unit tambang terkini.
           </p>
         </div>
-      </section>
+      </motion.section>
 
       {/* Filter Row */}
-      <div className="row-wrap on-bg" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+      <motion.div
+        className="row-wrap on-bg"
+        style={{ justifyContent: 'space-between', alignItems: 'center' }}
+        variants={itemVariants}
+      >
         <div>
           <h3 style={{ fontSize: '17px', fontWeight: 800, margin: 0 }}>
             Ringkasan Kinerja Pelatihan
@@ -252,91 +289,55 @@ export function DashboardPage() {
             </label>
           )}
         </div>
-      </div>
+      </motion.div>
 
-      {/* 4 Kartu KPI Utama */}
+      {/* 4 Kartu KPI Utama dengan Animasi Count-Up & Stagger */}
       <div className="grid g-4" id="kpis">
-        {/* KPI 1 */}
-        <div className="card" style={{ padding: '18px' }}>
-          <div className="row" style={{ justifyContent: 'space-between' }}>
-            <span className="small" style={{ fontWeight: 700 }}>
-              Total Laporan
-            </span>
-            <span className="ic-tile sm info">
-              <FileCheck2 size={16} />
-            </span>
-          </div>
-          <div className="kpi-value mt-1">
-            <span>{num(s.totalLaporan || 0)}</span>
-            <small>Laporan</small>
-          </div>
-          <div className="small muted mt-1">
-            {s.totalTeori || 0} Teori • {s.totalPraktik || 0} Praktik
-          </div>
-        </div>
+        <AnimatedKpiCard
+          label="Total Laporan"
+          value={s.totalLaporan || 0}
+          unit="Laporan"
+          sub={`${s.totalTeori || 0} Teori • ${s.totalPraktik || 0} Praktik`}
+          icon={FileCheck2}
+          iconClass="info"
+          delay={0.05}
+        />
 
-        {/* KPI 2 */}
-        <div className="card" style={{ padding: '18px' }}>
-          <div className="row" style={{ justifyContent: 'space-between' }}>
-            <span className="small" style={{ fontWeight: 700 }}>
-              Total Peserta Dilatih
-            </span>
-            <span className="ic-tile sm praktik">
-              <Users size={16} />
-            </span>
-          </div>
-          <div className="kpi-value mt-1">
-            <span>{num(s.totalPeserta || 0)}</span>
-            <small>Orang</small>
-          </div>
-          <div className="small muted mt-1">
-            Rata-rata {s.avgPeserta || 0} peserta / modul
-          </div>
-        </div>
+        <AnimatedKpiCard
+          label="Total Peserta Dilatih"
+          value={s.totalPeserta || 0}
+          unit="Orang"
+          sub={`Rata-rata ${s.avgPeserta || 0} peserta / modul`}
+          icon={Users}
+          iconClass="praktik"
+          delay={0.12}
+        />
 
-        {/* KPI 3 */}
-        <div className="card" style={{ padding: '18px' }}>
-          <div className="row" style={{ justifyContent: 'space-between' }}>
-            <span className="small" style={{ fontWeight: 700 }}>
-              Jam Pelatihan
-            </span>
-            <span className="ic-tile sm violet">
-              <Clock size={16} />
-            </span>
-          </div>
-          <div className="kpi-value mt-1">
-            <span>{num(s.totalJam || 0)}</span>
-            <small>Jam</small>
-          </div>
-          <div className="small muted mt-1">
-            Teori {s.jamTeori || 0}j • Praktik {s.jamPraktik || 0}j
-          </div>
-        </div>
+        <AnimatedKpiCard
+          label="Jam Pelatihan"
+          value={s.totalJam || 0}
+          unit="Jam"
+          sub={`Teori ${s.jamTeori || 0}j • Praktik ${s.jamPraktik || 0}j`}
+          icon={Clock}
+          iconClass="violet"
+          delay={0.19}
+        />
 
-        {/* KPI 4 */}
-        <div className="card" style={{ padding: '18px' }}>
-          <div className="row" style={{ justifyContent: 'space-between' }}>
-            <span className="small" style={{ fontWeight: 700 }}>
-              Tingkat Kelulusan
-            </span>
-            <span className="ic-tile sm ok">
-              <CheckCircle2 size={16} />
-            </span>
-          </div>
-          <div className="kpi-value mt-1">
-            <span>{pctSelesai}%</span>
-            <small>Selesai</small>
-          </div>
-          <div className="small muted mt-1">
-            {selesaiCount} Selesai • {prosesCount} Proses
-          </div>
-        </div>
+        <AnimatedKpiCard
+          label="Tingkat Kelulusan"
+          value={pctSelesai}
+          unit="% Selesai"
+          sub={`${selesaiCount} Selesai • ${prosesCount} Proses`}
+          icon={CheckCircle2}
+          iconClass="ok"
+          delay={0.26}
+        />
       </div>
 
       {/* Main & Side Grid: Grafik Batang & Donut */}
       <div className="grid g-main-side">
         {/* Grafik Batang Ringkasan Laporan */}
-        <section className="card">
+        <motion.section className="card" variants={itemVariants}>
           <div className="card-head">
             <div>
               <div className="card-title">Ringkasan Laporan</div>
@@ -391,10 +392,10 @@ export function DashboardPage() {
               Praktik Lapangan
             </span>
           </div>
-        </section>
+        </motion.section>
 
         {/* Grafik Donat Status Penyelesaian */}
-        <section className="card">
+        <motion.section className="card" variants={itemVariants}>
           <div className="card-head">
             <div>
               <div className="card-title">Status Penyelesaian</div>
@@ -408,7 +409,14 @@ export function DashboardPage() {
           <div className="donut-wrap" style={{ position: 'relative', height: '170px' }}>
             <canvas ref={donutChartRef} aria-label="Grafik status penyelesaian" />
             <div className="donut-center">
-              <b>{pctSelesai}%</b>
+              <motion.b
+                key={pctSelesai}
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              >
+                {pctSelesai}%
+              </motion.b>
               <small>Tingkat Selesai</small>
             </div>
           </div>
@@ -436,13 +444,13 @@ export function DashboardPage() {
               <b>{belumCount}</b>
             </div>
           </div>
-        </section>
+        </motion.section>
       </div>
 
       {/* Main & Side Grid: Laporan Terbaru & Top Alat Berat */}
       <div className="grid g-main-side">
-        {/* Laporan Terbaru */}
-        <section className="card">
+        {/* Laporan Terbaru dengan Hover Lift */}
+        <motion.section className="card" variants={itemVariants}>
           <div className="card-head">
             <div>
               <div className="card-title">Laporan Terbaru</div>
@@ -455,16 +463,20 @@ export function DashboardPage() {
 
           <div className="list">
             {(data?.latestReports || []).length > 0 ? (
-              data.latestReports.map((r) => {
+              data.latestReports.map((r, idx) => {
                 const isPraktik = r.jenis === 'Praktik Lapangan';
                 return (
-                  <div
+                  <motion.div
                     key={r.id}
                     className="list-item"
                     onClick={() => navigate(`/laporan/${encodeURIComponent(r.id)}`)}
                     role="link"
                     tabIndex={0}
                     style={{ cursor: 'pointer' }}
+                    whileHover={{ x: 4, transition: { duration: 0.15 } }}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
                   >
                     <span className={`ic-tile sm ${isPraktik ? 'praktik' : ''}`}>
                       {isPraktik ? <Truck size={16} /> : <Presentation size={16} />}
@@ -483,7 +495,7 @@ export function DashboardPage() {
                       </div>
                     </div>
                     <StatusPill status={r.status} />
-                  </div>
+                  </motion.div>
                 );
               })
             ) : (
@@ -492,10 +504,10 @@ export function DashboardPage() {
               </div>
             )}
           </div>
-        </section>
+        </motion.section>
 
-        {/* Top Alat Berat */}
-        <section className="card">
+        {/* Top Alat Berat dengan Animated Bar */}
+        <motion.section className="card" variants={itemVariants}>
           <div className="card-head">
             <div>
               <div className="card-title">Top Alat Berat</div>
@@ -521,7 +533,12 @@ export function DashboardPage() {
                       <span>{a.count} Kali</span>
                     </div>
                     <div className="progress">
-                      <span style={{ width: `${barPct}%`, background: 'var(--praktik)' }} />
+                      <motion.span
+                        initial={{ width: 0 }}
+                        animate={{ width: `${barPct}%` }}
+                        transition={{ duration: 1, delay: i * 0.1, ease: 'easeOut' }}
+                        style={{ background: 'var(--praktik)' }}
+                      />
                     </div>
                   </div>
                 );
@@ -532,12 +549,12 @@ export function DashboardPage() {
               </div>
             )}
           </div>
-        </section>
+        </motion.section>
       </div>
 
       {/* Grid 2 Kolom: Peserta per Departemen & Laporan per Trainer */}
       <div className="grid g-2 keep-1">
-        <section className="card">
+        <motion.section className="card" variants={itemVariants}>
           <div className="card-head">
             <div>
               <div className="card-title">Peserta per Departemen</div>
@@ -563,7 +580,12 @@ export function DashboardPage() {
                       <span>{num(d.count)} Peserta</span>
                     </div>
                     <div className="progress">
-                      <span style={{ width: `${pctD}%`, background: 'var(--info)' }} />
+                      <motion.span
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pctD}%` }}
+                        transition={{ duration: 1, delay: idx * 0.08, ease: 'easeOut' }}
+                        style={{ background: 'var(--info)' }}
+                      />
                     </div>
                   </div>
                 );
@@ -574,9 +596,9 @@ export function DashboardPage() {
               </div>
             )}
           </div>
-        </section>
+        </motion.section>
 
-        <section className="card">
+        <motion.section className="card" variants={itemVariants}>
           <div className="card-head">
             <div>
               <div className="card-title">Laporan per Trainer</div>
@@ -602,7 +624,12 @@ export function DashboardPage() {
                       <span>{t.count} Laporan</span>
                     </div>
                     <div className="progress">
-                      <span style={{ width: `${pctT}%`, background: 'var(--violet)' }} />
+                      <motion.span
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pctT}%` }}
+                        transition={{ duration: 1, delay: idx * 0.08, ease: 'easeOut' }}
+                        style={{ background: 'var(--violet)' }}
+                      />
                     </div>
                   </div>
                 );
@@ -613,7 +640,7 @@ export function DashboardPage() {
               </div>
             )}
           </div>
-        </section>
+        </motion.section>
       </div>
     </motion.div>
   );

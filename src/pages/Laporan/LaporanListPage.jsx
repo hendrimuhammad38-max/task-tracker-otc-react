@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FilePlus2,
   Search,
@@ -18,6 +18,19 @@ import { StatusPill } from '../../components/common/StatusPill';
 import { Pagination } from '../../components/common/Pagination';
 import { Loader } from '../../components/common/Loader';
 import { EmptyState } from '../../components/common/EmptyState';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: 'easeOut' } }
+};
 
 export function LaporanListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -165,14 +178,22 @@ export function LaporanListPage() {
           </p>
         </div>
         <div className="page-actions">
-          <button type="button" className="btn btn-ghost" onClick={handleExportCsv}>
+          <motion.button
+            type="button"
+            className="btn btn-ghost"
+            onClick={handleExportCsv}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <FileSpreadsheet size={16} />
             Ekspor CSV
-          </button>
-          <Link to="/laporan-baru" className="btn btn-primary">
-            <FilePlus2 size={16} />
-            Laporan Baru
-          </Link>
+          </motion.button>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link to="/laporan-baru" className="btn btn-primary">
+              <FilePlus2 size={16} />
+              Laporan Baru
+            </Link>
+          </motion.div>
         </div>
       </div>
 
@@ -298,24 +319,31 @@ export function LaporanListPage() {
         </div>
       </section>
 
-      {/* List Laporan */}
+      {/* List Laporan dengan Animasi Stagger */}
       <section className="card mt-2">
         {loading ? (
           <Loader text="Memuat daftar laporan…" />
         ) : data.items?.length > 0 ? (
-          <div className="list">
+          <motion.div
+            className="list"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {data.items.map((r) => {
               const isPraktik = r.jenis === 'Praktik Lapangan';
               const isDownloading = downloadingId === r.id;
 
               return (
-                <div
+                <motion.div
                   key={r.id}
                   className="list-item"
                   onClick={() => navigate(`/laporan/${encodeURIComponent(r.id)}`)}
                   role="link"
                   tabIndex={0}
                   style={{ cursor: 'pointer' }}
+                  variants={itemVariants}
+                  whileHover={{ x: 6, transition: { duration: 0.15 } }}
                 >
                   <span className={`ic-tile sm ${isPraktik ? 'praktik' : ''}`}>
                     {isPraktik ? <Truck size={16} /> : <Presentation size={16} />}
@@ -339,12 +367,14 @@ export function LaporanListPage() {
                     <StatusPill status={r.status} />
                   </span>
 
-                  <button
+                  <motion.button
                     type="button"
                     className="btn-round"
                     onClick={(e) => handleDownloadPdf(e, r.id)}
                     title="Unduh PDF"
                     disabled={isDownloading}
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.9 }}
                   >
                     {isDownloading ? (
                       <span
@@ -354,11 +384,11 @@ export function LaporanListPage() {
                     ) : (
                       <Download size={15} />
                     )}
-                  </button>
-                </div>
+                  </motion.button>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         ) : (
           <EmptyState
             title="Tidak ada laporan"

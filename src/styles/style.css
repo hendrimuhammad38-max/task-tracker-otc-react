@@ -710,9 +710,11 @@ svg.lucide { width: 18px; height: 18px; flex: none; }
 @media (max-width: 1100px) {
   .g-main-side, .g-side-main, .g-3 { grid-template-columns: minmax(0, 1fr); }
 }
+.mobile-menu-btn { display: none; }
 @media (max-width: 1023px) {
   :root { --sidebar-w: 0px; }
   .sidebar { display: none; }
+  .mobile-menu-btn { display: inline-flex; align-items: center; justify-content: center; margin-right: 2px; }
   .main { margin-left: 0; }
   .topbar { padding: 12px 16px 10px; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
   .tb-brand { display: flex; }
@@ -1049,3 +1051,70 @@ body { overflow-x: hidden; }
   .sup-lbl { display: block; }
 }
 @media (max-width: 560px) { .sup-row { grid-template-columns: 1fr; } }
+
+/* =============================================================================
+   ENHANCED MODERN ANIMATIONS (Framer Motion & CSS micro-interactions)
+   ============================================================================= */
+.card {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease;
+}
+.card:hover {
+  border-color: var(--border-2);
+}
+
+.list-item {
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.15s ease, box-shadow 0.2s ease;
+}
+.list-item:hover {
+  background-color: var(--surface-2);
+  transform: translateX(4px);
+}
+
+.btn {
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.15s ease;
+}
+.btn:hover {
+  filter: brightness(1.05);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-round {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease;
+}
+.btn-round:hover {
+  transform: scale(1.12);
+}
+.btn-round:active {
+  transform: scale(0.9);
+}
+
+.dot-live {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1d9a66;
+  box-shadow: 0 0 0 0 rgba(29, 154, 102, 0.7);
+  animation: pulseLive 2s infinite;
+}
+@keyframes pulseLive {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(29, 154, 102, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(29, 154, 102, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(29, 154, 102, 0);
+  }
+}
+
+.progress > span {
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
